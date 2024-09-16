@@ -1,0 +1,202 @@
+import java.util.Random;
+import java.util.Scanner;
+
+public class CPFeCNPJ {
+    
+    public static int calcularVerificador(int[] digitos){
+        int soma=0;
+        for(int pesos =10, i=0; pesos>1 && i<9;pesos--, i++){
+            soma += digitos[i]*pesos;
+        }
+        int resto= soma % 11;
+        int verificadorUm = 11-resto;
+        return verificadorUm >= 10 ? 0 : verificadorUm;
+    }
+    public static int calcularVerificadorDois(int[] digitos){
+        int soma=0;
+        for(int pesos =11, i=0; pesos>1 && i<10;pesos--, i++){
+            soma += digitos[i]*pesos;
+        }
+        int resto= soma % 11;
+        int verificadorDois = 11-resto;
+        return verificadorDois >= 10 ? 0 : verificadorDois;
+    }
+    public static int calcularVerificadorCnpjUm(int[] digitos){
+        int soma=0;
+        for(int pesos =2, i=11; pesos<10 && i>3;pesos++, i--){
+            soma += digitos[i]*pesos;
+        }
+        for(int pesos =2, i=3; pesos<6 && i>=0;pesos++, i--){
+            soma += digitos[i]*pesos;
+        }
+        int resto= soma % 11;
+        int verificadorUm = 11-resto;
+        return verificadorUm >= 10 ? 0 : verificadorUm;
+   }
+    public static int calcularVerificadorCnpjDois(int[] digitos){
+    int soma=0;
+    for(int pesos =2, i=12; pesos<10 && i>4;pesos++, i--){
+        soma += digitos[i]*pesos;
+    }
+    for(int pesos =2, i=4; pesos<7 && i>=0;pesos++, i--){
+        soma += digitos[i]*pesos;
+    }
+    int resto= soma % 11;
+    int verificadorDois = 11-resto;
+    return verificadorDois >= 10 ? 0 : verificadorDois;
+}
+    public static void main(String[] args) {
+        Random aleatorio = new Random();       
+        int q;
+        Scanner sc1 = new Scanner(System.in);
+
+        System.out.println("Escolha Verificar CPF[1]\nGerar CPF[2]\nVerificar CNPJ[3]\nGerar CNPJ[4]");
+
+        q= sc1.nextInt();
+
+        switch(q){
+
+            case 1 -> {
+                System.out.println("Verificador de cpf!");
+                System.out.println("Digita seu cpf");
+                
+                sc1.nextLine();
+                String cpf = sc1.nextLine();
+                sc1.close();
+                
+                cpf = cpf.replaceAll("\\D", ""); //remove todas os caracteres que não sejam digitos
+                
+                if (cpf.length() != 11) {//programa encerrado se cpf não tiver 11 digitos
+                    System.out.println("CPF inválido: deve ter 11 dígitos.");
+                    return;
+                }
+                
+                int[] digitos = new int[11];
+                
+                for (int i = 0; i<11; i++) { //transformar o numero char em numero int e deixar cada um em uma posição no vetor digitos
+                    digitos[i]= Character.getNumericValue(cpf.charAt(i));
+                }
+                
+                int primeiroDigitoVerificador = calcularVerificador(digitos);
+                int segundoDigitoVerificador = calcularVerificadorDois(digitos);
+                
+                int contador=0; //verificar se todos os digitos são iguais
+                for(int i=0;i<11;i++){
+                    if(digitos[0]==digitos[i]){
+                        contador++;
+                    }
+                }
+                
+                if(contador==11){
+                    System.out.println("CPF inválido");
+                } else if(primeiroDigitoVerificador==digitos[9] && segundoDigitoVerificador==digitos[10]){
+                    System.out.println("CPF válido");
+                } else {
+                    System.out.println("CPF inválido");
+                }
+            }
+
+            case 2 -> {
+                System.out.println("Gerador de CPF");
+                
+                int numeroCpf[] = new int[11];
+                
+                for(int i=0; i<9;i++){
+                    int numeros= aleatorio.nextInt(9);
+                    numeroCpf[i]=numeros;
+                }
+                
+                numeroCpf[9]= calcularVerificador(numeroCpf);
+                numeroCpf[10]= calcularVerificadorDois(numeroCpf);
+                
+                for(int i=0;i<11;i++){
+                    System.out.printf("%d", numeroCpf[i]);
+                }
+            }
+
+            case 3 ->{
+                System.out.println("Verificador de cnpj!");
+                System.out.println("Digita seu cnpj");
+
+                sc1.nextLine();
+                String cnpj = sc1.nextLine();
+                sc1.close();
+                
+                cnpj = cnpj.replaceAll("\\D", ""); //remove todas os caracteres que não sejam digitos
+                
+                if (cnpj.length() != 14) {//programa encerrado se cnpj não tiver 14 digitos
+                    System.out.println("CNPJ inválido: deve ter 14 dígitos.");
+                    return;
+                }
+                int[] digitos = new int[14];
+                
+                for (int i = 0; i<14; i++) { //transformar o numero char em numero int e deixar cada um em uma posição no vetor digitos
+                    digitos[i]= Character.getNumericValue(cnpj.charAt(i));
+                }
+
+                int primeiroDigitoVerificador = calcularVerificadorCnpjUm(digitos);
+                int segundoDigitoVerificador = calcularVerificadorCnpjDois(digitos);
+                
+                int contador=0; //verificar se todos os digitos são iguais
+                for(int i=0;i<14;i++){
+                    if(digitos[0]==digitos[i]){
+                        contador++;
+                    }
+                }
+                
+                if(contador==11){
+                    System.out.println("CNPJ inválido");
+                } else if(primeiroDigitoVerificador==digitos[12] && segundoDigitoVerificador==digitos[13]){
+                    System.out.println("CNPJ válido");
+                } else {
+                    System.out.println("CNPJ inválido");
+                }
+            }
+
+            case 4 ->{
+                System.out.println("Gerador de CNPJ");
+                System.out.println("Quantas filiais quer que tenha no CNPJ(recomendado: 1)");  
+                sc1.nextLine();
+                int filial = sc1.nextInt();
+                sc1.close();
+                
+                if (filial>9999 && filial<1){
+                    System.out.println("Número inválido de filais, o minimo é 1 e o máximo 9999");
+                    return;
+                }
+                int numeroCnpj[] = new int[14];
+                
+                for(int i=0; i<8;i++){
+                    int numeros= aleatorio.nextInt(9);
+                    numeroCnpj[i]=numeros;
+                }      
+                for(int i=8; i<12; i++){
+                    numeroCnpj[i]=0;
+                }    
+                if(filial<10){
+                    numeroCnpj[11]= filial;
+                } else if(filial<100){
+                    numeroCnpj[10]= filial/10;
+                    numeroCnpj[11]= filial % 10;
+                } else if(filial<1000){
+                    numeroCnpj[10]= filial/100;
+                    numeroCnpj[11]= filial % 100;
+                } else if(filial<10000){
+                    numeroCnpj[10]= filial/1000;
+                    numeroCnpj[11]= filial % 1000;
+                }
+
+                numeroCnpj[12]= calcularVerificadorCnpjUm(numeroCnpj);
+                numeroCnpj[13]= calcularVerificadorCnpjDois(numeroCnpj);
+                
+                for(int i=0;i<14;i++){
+                    System.out.printf("%d", numeroCnpj[i]);
+                }
+                
+                
+            }
+
+        }
+                            
+    }    
+}
